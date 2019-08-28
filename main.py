@@ -2,12 +2,10 @@ from Face_Detection import faceDetection
 import cv2
 
 image = "./Images/Img_01.JPG"
+cascPath = "./OpenCV/haarcascades/haarcascade_frontalface_default.xml"
 
 fd = faceDetection.faceDetectionClass()
-face = fd.detectFace(image,1)
+face = fd.detectFace(image,cascPath)
 
 if face is None:
     print("Not cool.")
-#else:
-#    cv2.imshow("Faces found", face)
-#    cv2.waitKey(0)
