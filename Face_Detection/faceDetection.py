@@ -56,11 +56,6 @@ class faceDetectionClass:
             # Draw a rectangle around the faces
             for (x, y, w, h) in faces:
                 cv2.rectangle(videoFrame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                                                 
-                                                 #            if imageShow is 1:
-                                                 #cv2.imshow("Faces found", image)
-                                                 #cv2.waitKey(0)
-                                                             
 
         return videoFrame
 
