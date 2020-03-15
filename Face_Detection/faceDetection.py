@@ -1,5 +1,9 @@
 import cv2
 
+cascPath = "./OpenCV/haarcascades/haarcascade_frontalface_default.xml"
+smile_cascPath = "./OpenCV/haarcascades/haarcascade_smile.xml"
+eyes_cascPath = "./OpenCV/haarcascades/haarcascade_eye.xml"
+
 class faceDetectionClass:
 
 
@@ -35,15 +39,14 @@ class faceDetectionClass:
             return faces
 
     # this function accepts video frames and look for face
-    def detectFaceSmileInVideo( self , videoFrame , cascPath, smile_cascPath ):
-        face_detection_scale_factor = 1.4         #scale factor reduces the size of image and passes to detectMultiScale function
+    def detectFaceSmileInVideo( self , videoFrame ):
+        face_detection_scale_factor = 1.3         #scale factor reduces the size of image and passes to detectMultiScale function
         smile_detection_scale_factor = 1.8         #scale factor reduces the size of image and passes to detectMultiScale function
 
         minimumNeighbours = 5
 
         faceCascade = cv2.CascadeClassifier(cascPath)
-        if smile_cascPath is not None:
-            smile_cascade = cv2.CascadeClassifier(smile_cascPath)
+        smile_cascade = cv2.CascadeClassifier(smile_cascPath)
         if videoFrame is None:
             print("Image not found.")
             return None
@@ -65,7 +68,7 @@ class faceDetectionClass:
                 cv2.rectangle(videoFrame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 roi_gray = gray[y:y + h, x:x + w]
                 roi_color = videoFrame[y:y + h, x:x + w]
-                smiles = smile_cascade.detectMultiScale(roi_gray, smile_detection_scale_factor , 1 )
+                smiles = smile_cascade.detectMultiScale(roi_gray, smile_detection_scale_factor , 20 )
                 for (sx, sy, sw, sh) in smiles:
                     cv2.rectangle(roi_color, (sx, sy), ((sx + sw), (sy + sh)), (0, 0, 255), 2)
 
@@ -73,14 +76,13 @@ class faceDetectionClass:
 
 
     # this function accepts video frames and look for face
-    def detectFaceEyesInVideo(self, videoFrame, cascPath, eye_cascPath):
+    def detectFaceEyesInVideo(self, videoFrame ):
         faceCascade = cv2.CascadeClassifier(cascPath)
         face_detection_scale_factor = 1.2         #scale factor reduces the size of image and passes to detectMultiScale function
         eye_detection_scale_factor = 1.3         #scale factor reduces the size of image and passes to detectMultiScale function
 
         minimumNeighbours = 5
-        if eye_cascPath is not None:
-            eye_cascade = cv2.CascadeClassifier(eye_cascPath)
+        eye_cascade = cv2.CascadeClassifier(eyes_cascPath)
         if videoFrame is None:
             print("Image not found.")
             return None

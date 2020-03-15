@@ -3,9 +3,6 @@ import numpy as np
 import cv2
 
 cap = cv2.VideoCapture(0)
-cascPath = "./OpenCV/haarcascades/haarcascade_frontalface_default.xml"
-smile_cascPath = "./OpenCV/haarcascades/haarcascade_smile.xml"
-eyes_cascPath = "./OpenCV/haarcascades/haarcascade_eye.xml"
 fd = faceDetection.faceDetectionClass()
 
 if 0:
@@ -19,8 +16,8 @@ while(True):
 
     if ret == True :
         # Display the resulting frame
-        face = fd.detectFaceEyesInVideo(frame,cascPath,eyes_cascPath)
-#       face = fd.detectFaceSmileInVideo(frame, cascPath, smile_cascPath)
+#        face = fd.detectFaceEyesInVideo(frame,cascPath,eyes_cascPath)
+        face = fd.detectFaceSmileInVideo(frame)
         cv2.imshow('frame',face)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
