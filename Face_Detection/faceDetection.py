@@ -36,8 +36,8 @@ class faceDetectionClass:
 
     # this function accepts video frames and look for face
     def detectFaceSmileInVideo( self , videoFrame , cascPath, smile_cascPath ):
-        face_detection_scale_factor = 1.2         #scale factor reduces the size of image and passes to detectMultiScale function
-        smile_detection_scale_factor = 1.05         #scale factor reduces the size of image and passes to detectMultiScale function
+        face_detection_scale_factor = 1.4         #scale factor reduces the size of image and passes to detectMultiScale function
+        smile_detection_scale_factor = 1.8         #scale factor reduces the size of image and passes to detectMultiScale function
 
         minimumNeighbours = 5
 
@@ -65,7 +65,7 @@ class faceDetectionClass:
                 cv2.rectangle(videoFrame, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 roi_gray = gray[y:y + h, x:x + w]
                 roi_color = videoFrame[y:y + h, x:x + w]
-                smiles = smile_cascade.detectMultiScale(roi_gray, smile_detection_scale_factor , minimumNeighbours )
+                smiles = smile_cascade.detectMultiScale(roi_gray, smile_detection_scale_factor , 1 )
                 for (sx, sy, sw, sh) in smiles:
                     cv2.rectangle(roi_color, (sx, sy), ((sx + sw), (sy + sh)), (0, 0, 255), 2)
 
