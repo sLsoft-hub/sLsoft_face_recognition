@@ -19,7 +19,7 @@ while(True):
 
     if ret == True :
         # Display the resulting frame
-        face = fd.detectFaceSmileInVideo(frame,cascPath,smile_cascPath)
+        face = fd.detectFaceEyesInVideo(frame,cascPath,eyes_cascPath)
         cv2.imshow('frame',face)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
