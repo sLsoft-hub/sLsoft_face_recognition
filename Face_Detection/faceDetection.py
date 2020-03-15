@@ -76,7 +76,7 @@ class faceDetectionClass:
     def detectFaceEyesInVideo(self, videoFrame, cascPath, eye_cascPath):
         faceCascade = cv2.CascadeClassifier(cascPath)
         face_detection_scale_factor = 1.2         #scale factor reduces the size of image and passes to detectMultiScale function
-        eye_detection_scale_factor = 1.05         #scale factor reduces the size of image and passes to detectMultiScale function
+        eye_detection_scale_factor = 1.3         #scale factor reduces the size of image and passes to detectMultiScale function
 
         minimumNeighbours = 5
         if eye_cascPath is not None:
