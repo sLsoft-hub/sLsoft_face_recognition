@@ -5,38 +5,44 @@ cascPath = "./OpenCV/haarcascades/haarcascade_frontalface_default.xml"
 smile_cascPath = "./OpenCV/haarcascades/haarcascade_smile.xml"
 eyes_cascPath = "./OpenCV/haarcascades/haarcascade_eye.xml"
 
+GRAY = 1
+BGR = 2
+
 class brighnessDetectionClass :
 
-    def changeBrightness( self , videoFrame ):
+    # This function normalises the brightness of an image to 128
+    def changeBrightness( self , videoFrame, imageFormat , brightnessLevel ):
         darkness_threshold = 128
-        alpha = 2.2
-        beta = 50
-        videoFrame_HSV = cv2.cvtColor(videoFrame, cv2.COLOR_BGR2HSV)
+        if imageFormat == GRAY:
+            videoFrame_BGR = cv2.cvtColor(videoFrame, cv2.COLOR_GRAY2BGR)
+            videoFrame_HSV = cv2.cvtColor(videoFrame_BGR, cv2.COLOR_BGR2HSV)
+        else:
+            videoFrame_HSV = cv2.cvtColor(videoFrame, cv2.COLOR_BGR2HSV)
+
         result = cv2.mean( videoFrame_HSV )
-        if result[2] > darkness_threshold:
+        brightnessValue = ( brightnessLevel - result[2] ) + result[2]
+        if result[2] > brightnessLevel:
             if debug == True:
                 print("bright image = ")
                 print(result[2])
-
-            new_videoFrame = np.zeros(videoFrame.shape, videoFrame.dtype)
-            for y in range(videoFrame.shape[0]):
-                for x in range(videoFrame.shape[1]):
-                    for c in range(videoFrame.shape[2]):
-                        new_videoFrame[y, x, c] = np.clip(alpha * videoFrame[y, x, c] + beta, 0, 255)
 
         else:
             if debug == True:
                 print("dark image = ")
                 print(result[2])
 
-            new_videoFrame = np.zeros(videoFrame.shape, videoFrame.dtype)
-            for y in range(videoFrame.shape[0]):
-                for x in range(videoFrame.shape[1]):
-                    for c in range(videoFrame.shape[2]):
-                        new_videoFrame[y, x, c] = np.clip(alpha * videoFrame[y, x, c] + beta, 0, 255)
+        h, s, v = cv2.split(videoFrame_HSV)
+        v = cv2.add(v, brightnessValue)
+        videoFrame_HSV = cv2.merge((h, s, v))
 
-        videoFrame_BGR = cv2.cvtColor(videoFrame, cv2.COLOR_HSV2BGR)
-        return videoFrame_BGR
+        if imageFormat == GRAY:
+            videoFrame_BGR = cv2.cvtColor(videoFrame_HSV, cv2.COLOR_HSV2BGR)
+            videoFrame = cv2.cvtColor(videoFrame_BGR, cv2.COLOR_BGR2GRAY)
+
+        else:
+            videoFrame = cv2.cvtColor(videoFrame_HSV, cv2.COLOR_HSV2BGR)
+
+        return videoFrame
 
 
 class faceDetectionClass:
@@ -75,6 +81,7 @@ class faceDetectionClass:
     def detectFaceSmileInVideo( self , videoFrame ):
         face_detection_scale_factor = 1.3         #scale factor reduces the size of image and passes to detectMultiScale function
         smile_detection_scale_factor = 1.8         #scale factor reduces the size of image and passes to detectMultiScale function
+        detectBrightness = brighnessDetectionClass()
 
         minimumNeighbours = 5
 
@@ -85,6 +92,8 @@ class faceDetectionClass:
             return None
         else:
             gray = cv2.cvtColor(videoFrame, cv2.COLOR_BGR2GRAY)
+            gray = detectBrightness.changeBrightness(gray, GRAY, 90)
+            videoFrame = detectBrightness.changeBrightness(videoFrame, BGR, 90)
             # Detect faces in the image
             faces = faceCascade.detectMultiScale(
                                                  gray,
@@ -102,6 +111,7 @@ class faceDetectionClass:
                 roi_gray = gray[y:y + h, x:x + w]
                 roi_color = videoFrame[y:y + h, x:x + w]
                 smiles = smile_cascade.detectMultiScale(roi_gray, smile_detection_scale_factor , 20)
+                print("Found {0} smiles!".format(len(smiles)))
                 for (sx, sy, sw, sh) in smiles:
                     cv2.rectangle(roi_color, (sx, sy), ((sx + sw), (sy + sh)), (0, 0, 255), 2)
 
@@ -121,8 +131,9 @@ class faceDetectionClass:
             print("Image not found.")
             return None
         else:
-            videoFrame = detectBrightness.changeBrightness(videoFrame)
             gray = cv2.cvtColor(videoFrame, cv2.COLOR_BGR2GRAY)
+#            videoFrame = detectBrightness.changeBrightness(videoFrame, BGR, 128)
+            gray = detectBrightness.changeBrightness(gray, GRAY , 128 )
             # Detect faces in the image
             faces = faceCascade.detectMultiScale(
                 gray,
@@ -140,6 +151,7 @@ class faceDetectionClass:
                 roi_gray = gray[y:y + h, x:x + w]
                 roi_color = videoFrame[y:y + h, x:x + w]
                 eyes = eye_cascade.detectMultiScale(roi_gray, eye_detection_scale_factor , minimumNeighbours)
+                print("Found {0} eyes!".format(len(eyes)))
                 for (sx, sy, sw, sh) in eyes:
                     cv2.rectangle(roi_color, (sx, sy), ((sx + sw), (sy + sh)), (0, 0, 255), 2)
 
